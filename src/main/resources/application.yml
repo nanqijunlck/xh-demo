@@ -1,0 +1,115 @@
+server:
+  port: 9416
+
+api:
+  version: 1.0
+
+spring:
+  profiles:
+    active: local
+  application:
+    name: fqyc-xh-quanlity
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    url: jdbc:mysql://110.40.132.166:3306/scheduleTest?allowMultiQueries=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      username: xsyx_wcs
+      password: xsyx_wcs_2022
+      initial-size: 10
+      min-idle: 10
+      max-active: 50
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/*.xml
+  type-aliases-package: com.fqyc.quality.entity
+  configuration:
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+  global-config:
+    db-config:
+      update-strategy: not_null
+      id-type: auto
+
+management:
+  endpoint:
+    mappings:
+      enabled: true
+    httptrace:
+      enabled: true
+    health:
+      show-details: "ALWAYS"
+  health:
+    elasticsearch:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: ["*"]
+
+swagger:
+  enable: true
+
+logs:
+  info:
+#    file: ${user.dir}/logs/${spring.application.name}.info.log
+    file: ${user.dir}/logs/${spring.application.name}.info.log
+    max-history: 7
+  error:
+#    file: ${user.dir}/logs/${spring.application.name}.error.log
+    file: ${user.dir}/logs/${spring.application.name}.error.log
+    max-history: 7
+
+logging:
+  level:
+    root: INFO
+    org.apache.http: INFO
+    org.apache.zookeeper: ERROR
+    com.ctrip.framework.apollo: ERROR
+    cn.hydee.ewx.honey: debug
+
+# 异常信息定义
+exception:
+  maps:
+    10001: 参数为空[%s]
+    10002: 参数异常[%s]
+    10003: token失效
+    10004: 病例模板不存在
+    10006: 员工顾客关系不存在
+    10007: 商品清单商品数量超过上限%s个
+    10008: 商户编码为空
+    10999: 系统内部错误[%s]
+    19999: "%s"
+
+# 商户平台用户token过期时长(4个小时)
+token-expire-in: 14400
+# 顾客信息过期时长(4个小时)
+customer-expire-in: 14400
+
+task:
+  page-size: 100
+  review-interval-time: INTERVAL_TIME
+  review-default-interval-time: 30
+
+thread:
+  # 核心线程数（默认线程数）
+  core-pool-size: 20
+  max-pool-size: 100
+  #  允许线程空闲时间（单位：默认为秒）
+  keep-alive-time: 10
+  # 缓冲队列大小
+  queue-capacity: 200
+  # 线程池名前缀 */
+  thread-name-prefix: Async-Service
+  page-size: 100
