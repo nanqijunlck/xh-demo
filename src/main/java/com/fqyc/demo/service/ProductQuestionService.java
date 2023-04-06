@@ -2,6 +2,7 @@ package com.fqyc.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fqyc.demo.dto.ProductQuestionReqDTO;
+import com.fqyc.demo.dto.RepairProductQuestionReqDTO;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.entity.ProductQuestion;
 
@@ -23,4 +24,8 @@ public interface ProductQuestionService extends IService<ProductQuestion> {
     Boolean deleteQuestion(Integer id);
 
     PageDTO<ProductQuestion> pageQuery(ProductQuestionReqDTO requestDTO);
+
+    Boolean addOrUpdateRepair(RepairProductQuestionReqDTO requestDTO);
+
+    PageDTO<ProductQuestion> repairPageQuery(RepairProductQuestionReqDTO requestDTO);
 }

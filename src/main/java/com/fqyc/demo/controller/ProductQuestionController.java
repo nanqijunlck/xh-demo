@@ -1,10 +1,7 @@
 package com.fqyc.demo.controller;
 
 import com.fqyc.demo.controller.base.BaseController;
-import com.fqyc.demo.dto.ProductQuestionReqDTO;
-import com.fqyc.demo.dto.QualityOrderAddReqDTO;
-import com.fqyc.demo.dto.QualityOrderRequestDTO;
-import com.fqyc.demo.dto.ScanQueryRspDTO;
+import com.fqyc.demo.dto.*;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.dto.base.ResponseBase;
 import com.fqyc.demo.entity.ProductQuestion;
@@ -41,11 +38,11 @@ public class ProductQuestionController extends BaseController {
         return super.generateSuccess(aBoolean);
     }
 
-    @ApiOperation("add/update质检故障")
+    @ApiOperation("add/update维修")
     @PostMapping("/addOrUpdateRepair")
-    public ResponseBase<Boolean> addOrUpdateRepair(@RequestBody ProductQuestionReqDTO requestDTO) {
-        log.debug("新增质检单，requestDTO={}", requestDTO);
-        Boolean aBoolean = productQuestionService.addOrUpdate(requestDTO);
+    public ResponseBase<Boolean> addOrUpdateRepair(@RequestBody RepairProductQuestionReqDTO requestDTO) {
+        log.debug("新增维修单，requestDTO={}", requestDTO);
+        Boolean aBoolean = productQuestionService.addOrUpdateRepair(requestDTO);
         return super.generateSuccess(aBoolean);
     }
 
@@ -64,11 +61,12 @@ public class ProductQuestionController extends BaseController {
         PageDTO<ProductQuestion> pageQuery = productQuestionService.pageQuery(requestDTO);
         return super.generateSuccess(pageQuery);
     }
-//    @ApiOperation("质检故障查询")
-//    @PostMapping("/pageQuery")
-//    public ResponseBase<PageDTO<ProductQuestion>> pageQuery(@RequestBody ProductQuestionReqDTO requestDTO) {
-//        log.debug("质检故障查询，requestDTO={}", requestDTO);
-//        PageDTO<ProductQuestion> pageQuery = productQuestionService.pageQuery(requestDTO);
-//        return super.generateSuccess(pageQuery);
-//    }
+
+    @ApiOperation("维修查询")
+    @PostMapping("/repairPageQuery")
+    public ResponseBase<PageDTO<ProductQuestion>> repairPageQuery(@RequestBody RepairProductQuestionReqDTO requestDTO) {
+        log.debug("质检故障查询，requestDTO={}", requestDTO);
+        PageDTO<ProductQuestion> pageQuery = productQuestionService.repairPageQuery(requestDTO);
+        return super.generateSuccess(pageQuery);
+    }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fqyc.demo.dto.ProductQuestionReqDTO;
+import com.fqyc.demo.dto.RepairProductQuestionReqDTO;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.entity.ProductQuestion;
 import com.fqyc.demo.repository.ProductQuestionRepository;
@@ -55,7 +56,34 @@ public class ProductQuestionServiceImpl extends ServiceImpl<ProductQuestionRepos
     public PageDTO<ProductQuestion> pageQuery(ProductQuestionReqDTO requestDTO) {
         Page page = new Page(requestDTO.getCurrentPage(), requestDTO.getPageSize());
         LambdaQueryWrapper<ProductQuestion> queryWrapper = new QueryWrapper().lambda();
-        queryWrapper.isNull(ProductQuestion::getRepairQuestionCode);
+        queryWrapper.eq(ProductQuestion::getQuestionType, 0);
+        queryWrapper.orderByDesc(ProductQuestion::getUpdateTime, ProductQuestion::getQuestionCode);
+        if (StringUtils.isNotEmpty(requestDTO.getQuestionCode())) {
+            queryWrapper.eq(ProductQuestion::getQuestionCode, requestDTO.getQuestionCode());
+        }
+        if (StringUtils.isNotEmpty(requestDTO.getQuestionContent())) {
+            queryWrapper.like(ProductQuestion::getQuestionContent, requestDTO.getQuestionContent());
+        }
+        if (StringUtils.isNotEmpty(requestDTO.getRoleCode())) {
+            queryWrapper.eq(ProductQuestion::getRoleCode, requestDTO.getRoleCode());
+        }
+        Page selectPage = this.baseMapper.selectPage(page, queryWrapper);
+        return ModelConvertUtils.convertPageDTO(selectPage, ProductQuestion.class);
+    }
+
+    @Override
+    public Boolean addOrUpdateRepair(RepairProductQuestionReqDTO requestDTO) {
+        ProductQuestion productQuestion = ModelConvertUtils.convert(requestDTO, ProductQuestion.class);
+        productQuestion.setQuestionType(1);
+        boolean saveOrUpdate = this.saveOrUpdate(productQuestion);
+        return saveOrUpdate;
+    }
+
+    @Override
+    public PageDTO<ProductQuestion> repairPageQuery(RepairProductQuestionReqDTO requestDTO) {
+        Page page = new Page(requestDTO.getCurrentPage(), requestDTO.getPageSize());
+        LambdaQueryWrapper<ProductQuestion> queryWrapper = new QueryWrapper().lambda();
+        queryWrapper.eq(ProductQuestion::getQuestionType, 1);
         queryWrapper.orderByDesc(ProductQuestion::getUpdateTime, ProductQuestion::getQuestionCode);
         if (StringUtils.isNotEmpty(requestDTO.getQuestionCode())) {
             queryWrapper.eq(ProductQuestion::getQuestionCode, requestDTO.getQuestionCode());
