@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author lck
@@ -96,5 +97,18 @@ public class ProductQuestionServiceImpl extends ServiceImpl<ProductQuestionRepos
         }
         Page selectPage = this.baseMapper.selectPage(page, queryWrapper);
         return ModelConvertUtils.convertPageDTO(selectPage, ProductQuestion.class);
+    }
+
+    @Override
+    public List<String> queryQuestionByRoleCode(String roleCode) {
+        LambdaQueryWrapper<ProductQuestion> queryWrapper = new QueryWrapper().lambda();
+        queryWrapper.eq(ProductQuestion::getQuestionType, 0);
+        queryWrapper.orderByAsc(ProductQuestion::getCreateTime);
+        if (StringUtils.isNotEmpty(roleCode)) {
+            queryWrapper.eq(ProductQuestion::getRoleCode, roleCode);
+        }
+        List<ProductQuestion> productQuestions = this.baseMapper.selectList(queryWrapper);
+        List<String> collect = productQuestions.stream().map(ProductQuestion::getQuestionContent).collect(Collectors.toList());
+        return collect;
     }
 }

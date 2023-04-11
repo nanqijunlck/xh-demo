@@ -1,15 +1,10 @@
-package com.fqyc.demo.entity;
+package com.fqyc.demo.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -20,15 +15,9 @@ import java.util.Date;
  * @since 1.0
  */
 @Data
-@TableName("t_quality_order")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class QualityOrder implements Serializable {
+@Api("Excel导出")
+public class QualityOrderDownloadRsp {
     private static final long serialVersionUID = 1L;
-
-    @TableId
-    private Integer id;
 
     @ExcelProperty(value = "二维码", index = 0)
     @ApiModelProperty("二维码")
@@ -54,9 +43,6 @@ public class QualityOrder implements Serializable {
     @ApiModelProperty("编码")
     private String benChangCode;
 
-    @ApiModelProperty("数量")
-    private Integer quantity;
-
     @ExcelProperty(value = "质检状态", index = 6)
     @ApiModelProperty("质检状态")
     private String qualityStatus;
@@ -73,9 +59,11 @@ public class QualityOrder implements Serializable {
     @ApiModelProperty("维修内容")
     private String repairContent;
 
+    @ExcelProperty(value = "创建时间", index = 10)
     @ApiModelProperty("创建时间")
     private Date createTime;
 
+    @ExcelProperty(value = "更新时间", index = 11)
     @ApiModelProperty("更新时间")
     private Date updateTime;
 }

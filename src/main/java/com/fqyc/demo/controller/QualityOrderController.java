@@ -17,8 +17,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Objects;
 
 /**
  * @author LY
@@ -62,5 +62,13 @@ public class QualityOrderController extends BaseController {
         AppResponseBase<ScanQueryRspDTO> success = AppResponseBase.success();
         success.setData(scanQueryRspDTO);
         return success;
+    }
+
+    @ApiOperation("下载质检记录")
+    @PostMapping("/download")
+    public void download(@RequestBody QualityOrderRequestDTO requestDTO, HttpServletResponse response) {
+        log.info("下载质检单，requestDTO={}", requestDTO);
+        qualityService.downloadQuery(requestDTO, response);
+        return;
     }
 }

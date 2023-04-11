@@ -5,11 +5,11 @@ import com.fqyc.demo.dto.QualityOrderAddReqDTO;
 import com.fqyc.demo.dto.QualityOrderRequestDTO;
 import com.fqyc.demo.dto.QualityQuestionReqDTO;
 import com.fqyc.demo.dto.ScanQueryRspDTO;
-import com.fqyc.demo.dto.base.AppResponseBase;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.entity.QualityOrder;
 import com.fqyc.demo.entity.UserInfo;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -28,4 +28,6 @@ public interface QualityOrderService extends IService<QualityOrder> {
     ScanQueryRspDTO scanQueryList(String qrCode, UserInfo loginUserInfo);
 
     List<QualityOrder> queryList(QualityQuestionReqDTO reqDTO);
+
+    void downloadQuery(QualityOrderRequestDTO requestDTO, HttpServletResponse response);
 }

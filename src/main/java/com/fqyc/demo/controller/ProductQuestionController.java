@@ -1,22 +1,19 @@
 package com.fqyc.demo.controller;
 
 import com.fqyc.demo.controller.base.BaseController;
-import com.fqyc.demo.dto.*;
+import com.fqyc.demo.dto.ProductQuestionReqDTO;
+import com.fqyc.demo.dto.RepairProductQuestionReqDTO;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.dto.base.ResponseBase;
 import com.fqyc.demo.entity.ProductQuestion;
-import com.fqyc.demo.entity.QualityOrder;
-import com.fqyc.demo.entity.UserInfo;
 import com.fqyc.demo.service.ProductQuestionService;
-import com.fqyc.demo.service.QualityOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author LY
@@ -68,5 +65,13 @@ public class ProductQuestionController extends BaseController {
         log.debug("质检故障查询，requestDTO={}", requestDTO);
         PageDTO<ProductQuestion> pageQuery = productQuestionService.repairPageQuery(requestDTO);
         return super.generateSuccess(pageQuery);
+    }
+
+    @ApiOperation("根据角色查询故障编码")
+    @PostMapping("/queryQuestionByRoleCode")
+    public ResponseBase<List<String>> queryQuestionByRoleCode(@RequestParam("roleCode") String roleCode) {
+        log.debug("根据角色查询故障编码，roleCode={}", roleCode);
+        List<String> list = productQuestionService.queryQuestionByRoleCode(roleCode);
+        return super.generateSuccess(list);
     }
 }

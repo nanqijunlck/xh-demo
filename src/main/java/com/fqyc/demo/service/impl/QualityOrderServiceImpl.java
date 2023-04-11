@@ -5,11 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fqyc.demo.constants.ExceptionCodeConstants;
-import com.fqyc.demo.dto.QualityOrderAddReqDTO;
-import com.fqyc.demo.dto.QualityOrderRequestDTO;
-import com.fqyc.demo.dto.QualityQuestionReqDTO;
-import com.fqyc.demo.dto.ScanQueryRspDTO;
-import com.fqyc.demo.dto.base.AppResponseBase;
+import com.fqyc.demo.dto.*;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.entity.*;
 import com.fqyc.demo.enums.QualityStatusEnum;
@@ -21,6 +17,7 @@ import com.fqyc.demo.service.QualityOrderService;
 import com.fqyc.demo.service.SaleOrderService;
 import com.fqyc.demo.service.UserRoleService;
 import com.fqyc.demo.util.DateUtil;
+import com.fqyc.demo.util.ExcelUtil;
 import com.fqyc.demo.util.ModelConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,11 +25,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @Author lck
@@ -181,5 +178,36 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         }
         List<QualityOrder> list = this.list(queryWrapper);
         return list;
+    }
+
+    @Override
+    public void downloadQuery(QualityOrderRequestDTO reqDTO, HttpServletResponse response) {
+        try {
+            LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
+            queryWrapper.orderByDesc(QualityOrder::getCreateTime).last("limit 10000");
+            if (StringUtils.isNotEmpty(reqDTO.getQrCode())) {
+                queryWrapper.eq(QualityOrder::getQrCode, reqDTO.getQrCode());
+            }
+            if (StringUtils.isNotEmpty(reqDTO.getMerchantCode())) {
+                queryWrapper.eq(QualityOrder::getMerchantCode, reqDTO.getMerchantCode());
+            }
+            if (StringUtils.isNotEmpty(reqDTO.getOrderCode())) {
+                queryWrapper.le(QualityOrder::getOrderCode, reqDTO.getOrderCode());
+            }
+            if (StringUtils.isNotEmpty(reqDTO.getBenChangCode())) {
+                queryWrapper.le(QualityOrder::getBenChangCode, reqDTO.getBenChangCode());
+            }
+            if (StringUtils.isNotEmpty(reqDTO.getMerchantSpe())) {
+                queryWrapper.le(QualityOrder::getMerchantSpe, reqDTO.getMerchantSpe());
+            }
+            List<QualityOrder> list = this.list(queryWrapper);
+            if (CollectionUtils.isEmpty(list)) {
+                throw new BizException("10999", "暂无数据");
+            }
+            String fileName = list.get(0).getOrderCode() + DateUtil.getTodayYMDHMSString();
+            ExcelUtil.write(response, QualityOrderDownloadRsp.class, fileName, fileName, list);
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
     }
 }

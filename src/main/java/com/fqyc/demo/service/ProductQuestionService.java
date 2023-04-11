@@ -28,4 +28,6 @@ public interface ProductQuestionService extends IService<ProductQuestion> {
     Boolean addOrUpdateRepair(RepairProductQuestionReqDTO requestDTO);
 
     PageDTO<ProductQuestion> repairPageQuery(RepairProductQuestionReqDTO requestDTO);
+
+    List<String> queryQuestionByRoleCode(String roleCode);
 }
