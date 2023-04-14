@@ -19,11 +19,11 @@ import java.util.Date;
  * @since 1.0
  */
 @Data
-@TableName("t_product_question")
+@TableName("t_product_question_repair")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductQuestion implements Serializable {
+public class ProductQuestionRepair implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId
@@ -34,9 +34,6 @@ public class ProductQuestion implements Serializable {
 
     @ApiModelProperty("质检故障内容")
     private String questionContent;
-
-    @ApiModelProperty("角色编码")
-    private String roleCode;
 
     @ApiModelProperty("维修记录对应的故障编码")
     private String repairQuestionCode;

@@ -18,15 +18,15 @@ public class RepairProductQuestionReqDTO extends PageBase implements Serializabl
     @ApiModelProperty("主键id")
     private Integer id;
 
-    @ApiModelProperty("维修编码")
+    @ApiModelProperty("故障编码")
     private String questionCode;
 
-    @ApiModelProperty("维修内容")
+    @ApiModelProperty("故障内容")
     private String questionContent;
 
-    @ApiModelProperty("角色编码")
-    private String roleCode;
-
-    @ApiModelProperty("维修记录对应的故障编码")
+    @ApiModelProperty("维修编码")
     private String repairQuestionCode;
+
+    @ApiModelProperty("维修内容")
+    private String repairQuestionContent;
 }

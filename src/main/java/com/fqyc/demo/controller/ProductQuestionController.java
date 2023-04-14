@@ -6,6 +6,8 @@ import com.fqyc.demo.dto.RepairProductQuestionReqDTO;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.dto.base.ResponseBase;
 import com.fqyc.demo.entity.ProductQuestion;
+import com.fqyc.demo.entity.ProductQuestionRepair;
+import com.fqyc.demo.service.ProductQuestionRepairService;
 import com.fqyc.demo.service.ProductQuestionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +28,8 @@ public class ProductQuestionController extends BaseController {
 
     @Resource
     private ProductQuestionService productQuestionService;
+    @Resource
+    private ProductQuestionRepairService productQuestionRepairService;
 
     @ApiOperation("add/update质检故障")
     @PostMapping("/addOrUpdate")
@@ -39,7 +43,7 @@ public class ProductQuestionController extends BaseController {
     @PostMapping("/addOrUpdateRepair")
     public ResponseBase<Boolean> addOrUpdateRepair(@RequestBody RepairProductQuestionReqDTO requestDTO) {
         log.debug("新增维修单，requestDTO={}", requestDTO);
-        Boolean aBoolean = productQuestionService.addOrUpdateRepair(requestDTO);
+        Boolean aBoolean = productQuestionRepairService.addOrUpdateRepair(requestDTO);
         return super.generateSuccess(aBoolean);
     }
 
@@ -48,6 +52,13 @@ public class ProductQuestionController extends BaseController {
     public ResponseBase<Boolean> deleteQuestion(@RequestParam Integer id) {
         log.debug("删除质检单，requestDTO={}", id);
         Boolean aBoolean = productQuestionService.deleteQuestion(id);
+        return super.generateSuccess(aBoolean);
+    }
+    @ApiOperation("删除")
+    @GetMapping("/deleteRepair")
+    public ResponseBase<Boolean> deleteRepair(@RequestParam Integer id) {
+        log.debug("删除质检单，requestDTO={}", id);
+        Boolean aBoolean = productQuestionRepairService.deleteQuestion(id);
         return super.generateSuccess(aBoolean);
     }
 
@@ -61,17 +72,17 @@ public class ProductQuestionController extends BaseController {
 
     @ApiOperation("维修查询")
     @PostMapping("/repairPageQuery")
-    public ResponseBase<PageDTO<ProductQuestion>> repairPageQuery(@RequestBody RepairProductQuestionReqDTO requestDTO) {
+    public ResponseBase<PageDTO<ProductQuestionRepair>> repairPageQuery(@RequestBody RepairProductQuestionReqDTO requestDTO) {
         log.debug("质检故障查询，requestDTO={}", requestDTO);
-        PageDTO<ProductQuestion> pageQuery = productQuestionService.repairPageQuery(requestDTO);
+        PageDTO<ProductQuestionRepair> pageQuery = productQuestionRepairService.repairPageQuery(requestDTO);
         return super.generateSuccess(pageQuery);
     }
 
     @ApiOperation("根据角色查询故障编码")
-    @PostMapping("/queryQuestionByRoleCode")
-    public ResponseBase<List<String>> queryQuestionByRoleCode(@RequestParam("roleCode") String roleCode) {
+    @GetMapping("/queryQuestionByRoleCode")
+    public ResponseBase<List<ProductQuestion>> queryQuestionByRoleCode(@RequestParam("roleCode") String roleCode) {
         log.debug("根据角色查询故障编码，roleCode={}", roleCode);
-        List<String> list = productQuestionService.queryQuestionByRoleCode(roleCode);
+        List<ProductQuestion> list = productQuestionService.queryQuestionByRoleCode(roleCode);
         return super.generateSuccess(list);
     }
 }
