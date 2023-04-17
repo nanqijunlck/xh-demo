@@ -86,7 +86,6 @@ public class QualityStatisticsServiceImpl implements QualityStatisticsService {
                 totalCount += questionCount;
                 rspDTOList.add(QuestionStatisticsRspDTO.builder().questionCode(questionCode).questionContent(questionContent).questionCount(questionCount).build());
             }
-
             for (QuestionStatisticsRspDTO questionStatisticsRspDTO : rspDTOList) {
                 questionStatisticsRspDTO.setQuestionPercent(new BigDecimal(questionStatisticsRspDTO.getQuestionCount()).divide(new BigDecimal(String.valueOf(totalCount)), 4, BigDecimal.ROUND_HALF_UP)
                         .multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString());

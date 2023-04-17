@@ -53,6 +53,14 @@ public class UserServiceImpl extends ServiceImpl<UserInfoRepository, UserInfo> i
     @Override
     public Boolean addOrUpdate(UserInfoReqDTO reqDTO) {
         UserInfo userInfo = ModelConvertUtils.convert(reqDTO, UserInfo.class);
+        UserInfo userInfo1 = this.baseMapper.selectOne(new QueryWrapper<UserInfo>().lambda().eq(UserInfo::getUsername, reqDTO.getUsername()));
+        if (Objects.nonNull(userInfo1) && userInfo1.getUsername().equals(reqDTO.getUsername())) {
+            if (reqDTO.getId() == null) {
+                throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "该用户名已经存在");
+            } else if (!reqDTO.getId().equals(userInfo1.getId())) {
+                throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "该用户名已经存在");
+            }
+        }
         return this.saveOrUpdate(userInfo);
     }
 

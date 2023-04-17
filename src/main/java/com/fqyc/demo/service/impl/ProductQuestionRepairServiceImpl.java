@@ -41,11 +41,16 @@ public class ProductQuestionRepairServiceImpl extends ServiceImpl<ProductQuestio
     @Override
     public Boolean addOrUpdateRepair(RepairProductQuestionReqDTO requestDTO) {
         // 判断编码是否已存在
-        if(Objects.nonNull(requestDTO.getId())){
+        if (Objects.nonNull(requestDTO.getId())) {
             ProductQuestionRepair productQuestionRepair = this.baseMapper.selectOne(new QueryWrapper<ProductQuestionRepair>().lambda().eq(ProductQuestionRepair::getQuestionCode, requestDTO.getQuestionCode()));
-            if(Objects.nonNull(productQuestionRepair)){
+            if (Objects.nonNull(productQuestionRepair)) {
                 throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "该编码已存在，请使用新的编码");
             }
+        }
+        // 判断编码是否已存在
+        ProductQuestionRepair productQuestionRepair = this.baseMapper.selectOne(new QueryWrapper<ProductQuestionRepair>().lambda().eq(ProductQuestionRepair::getRepairQuestionContent, requestDTO.getRepairQuestionContent()));
+        if (Objects.nonNull(productQuestionRepair)) {
+            throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "该编码已存在，请使用新的编码");
         }
         ProductQuestionRepair productQuestion = ModelConvertUtils.convert(requestDTO, ProductQuestionRepair.class);
         boolean saveOrUpdate = this.saveOrUpdate(productQuestion);

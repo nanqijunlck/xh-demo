@@ -58,7 +58,7 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
             QualityOrder qualityOrderServiceOne = qualityOrderService.getOne(new QueryWrapper<QualityOrder>().lambda().eq(QualityOrder::getQrCode, requestDTO.getQrCode())
                     .eq(QualityOrder::getQualityStatus, QualityStatusEnum.ERROR.getCode()).orderByDesc(QualityOrder::getRoleCode).last("limit 1"));
             if (Objects.nonNull(qualityOrderServiceOne)) {
-                qualityOrderServiceOne.setQualityStatus(requestDTO.getQualityStatus());
+                qualityOrderServiceOne.setQualityStatus(QualityStatusEnum.SUCCESS.getCode());
                 qualityOrderServiceOne.setRepairContent(requestDTO.getQuestionContent());
                 qualityOrderService.updateById(qualityOrderServiceOne);
             }
@@ -67,7 +67,6 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
             String[] split = requestDTO.getQrCode().split("/");
             String orderCode = split[0];
             SaleOrder saleOrder = saleOrderService.getOne(new QueryWrapper<SaleOrder>().lambda().eq(SaleOrder::getOrderCode, orderCode));
-
             QualityOrder qualityOrder = new QualityOrder();
             qualityOrder.setQrCode(requestDTO.getQrCode());
             qualityOrder.setRoleCode(loginUserInfo.getRoleCode());
@@ -90,13 +89,13 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
     public PageDTO<QualityOrder> queryListByPage(QualityOrderRequestDTO requestDTO) {
         Page page = new Page(requestDTO.getCurrentPage(), requestDTO.getPageSize());
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
-        queryWrapper.ne(QualityOrder::getRoleCode, RoleCodeEnum.FIVE_SCAN_MACHINE.getCode());
+//        queryWrapper.ne(QualityOrder::getRoleCode, RoleCodeEnum.FIVE_SCAN_MACHINE.getCode());
         queryWrapper.orderByDesc(QualityOrder::getUpdateTime);
         if (StringUtils.isNotEmpty(requestDTO.getQrCode())) {
             queryWrapper.eq(QualityOrder::getQrCode, requestDTO.getQrCode());
         }
         if (StringUtils.isNotEmpty(requestDTO.getOrderCode())) {
-            queryWrapper.eq(QualityOrder::getOrderCode, requestDTO.getOrderCode());
+            queryWrapper.eq(QualityOrder::getOrderCode, requestDTO.getOrderCode().trim());
         }
         if (StringUtils.isNotEmpty(requestDTO.getMerchantCode())) {
             queryWrapper.eq(QualityOrder::getMerchantCode, requestDTO.getMerchantCode());
@@ -202,10 +201,11 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
             }
             List<QualityOrder> list = this.list(queryWrapper);
             if (CollectionUtils.isEmpty(list)) {
-                throw new BizException("10999", "暂无数据");
+                throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "暂无数据");
             }
+            List<QualityOrderDownloadRsp> qualityOrderDownloadRsp = ModelConvertUtils.convertList(list, QualityOrderDownloadRsp.class);
             String fileName = list.get(0).getOrderCode() + DateUtil.getTodayYMDHMSString();
-            ExcelUtil.write(response, QualityOrderDownloadRsp.class, fileName, fileName, list);
+            ExcelUtil.write(response, QualityOrderDownloadRsp.class, fileName, fileName, qualityOrderDownloadRsp);
         } catch (Exception e) {
             log.error("Error", e);
         }

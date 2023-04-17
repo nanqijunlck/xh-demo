@@ -1,6 +1,7 @@
 package com.fqyc.demo.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class QualityOrderDownloadRsp {
 
     @ExcelProperty(value = "二维码", index = 0)
     @ApiModelProperty("二维码")
+    @ColumnWidth(55)
     private String qrCode;
 
     @ExcelProperty(value = "计划单号", index = 1)
@@ -61,9 +63,11 @@ public class QualityOrderDownloadRsp {
 
     @ExcelProperty(value = "创建时间", index = 10)
     @ApiModelProperty("创建时间")
+    @ColumnWidth(20)
     private Date createTime;
 
     @ExcelProperty(value = "更新时间", index = 11)
+    @ColumnWidth(20)
     @ApiModelProperty("更新时间")
     private Date updateTime;
 }

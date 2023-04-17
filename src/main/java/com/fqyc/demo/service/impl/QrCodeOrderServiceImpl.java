@@ -52,7 +52,7 @@ public class QrCodeOrderServiceImpl extends ServiceImpl<QrCodeOrderRepository, Q
             queryWrapper.eq(QrCodeOrder::getOrderCode, requestDTO.getOrderCode());
         }
         if (StringUtils.isNotEmpty(requestDTO.getQrCode())) {
-            queryWrapper.like(QrCodeOrder::getQrCode, requestDTO.getQrCode());
+            queryWrapper.eq(QrCodeOrder::getQrCode, requestDTO.getQrCode());
         }
         if (StringUtils.isNotEmpty(requestDTO.getMerchantCode())) {
             queryWrapper.eq(QrCodeOrder::getMerchantCode, requestDTO.getMerchantCode());
