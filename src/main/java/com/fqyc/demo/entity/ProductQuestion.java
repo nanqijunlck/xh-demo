@@ -38,12 +38,6 @@ public class ProductQuestion implements Serializable {
     @ApiModelProperty("角色编码")
     private String roleCode;
 
-    @ApiModelProperty("维修记录对应的故障编码")
-    private String repairQuestionCode;
-
-    @ApiModelProperty("维修记录对应的故障内容")
-    private String repairQuestionContent;
-
     @ApiModelProperty("是否删除")
     private int isDeleted;
 

@@ -76,10 +76,10 @@ public class ProductQuestionRepairServiceImpl extends ServiceImpl<ProductQuestio
     }
 
     @Override
-    public List<ProductQuestion> queryListByRoleCode(String questionCode) {
+    public List<ProductQuestion> queryListByQuestionCode(String questionCode) {
         LambdaQueryWrapper<ProductQuestionRepair> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.eq(ProductQuestionRepair::getQuestionCode, questionCode);
-        queryWrapper.orderByDesc(ProductQuestionRepair::getUpdateTime);
+        queryWrapper.orderByAsc(ProductQuestionRepair::getRepairQuestionCode);
         List<ProductQuestionRepair> productQuestionList = this.baseMapper.selectList(queryWrapper);
         List<ProductQuestion> productQuestions = ModelConvertUtils.convertList(productQuestionList, ProductQuestion.class);
         return productQuestions;

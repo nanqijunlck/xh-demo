@@ -35,7 +35,7 @@ public class ProductQuestionServiceImpl extends ServiceImpl<ProductQuestionRepos
     public List<ProductQuestion> queryListByRoleCode(String roleCode) {
         LambdaQueryWrapper<ProductQuestion> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.eq(ProductQuestion::getRoleCode, roleCode);
-        queryWrapper.orderByDesc(ProductQuestion::getUpdateTime);
+        queryWrapper.orderByAsc(ProductQuestion::getQuestionCode);
         List<ProductQuestion> productQuestionList = this.baseMapper.selectList(queryWrapper);
         return productQuestionList;
     }
@@ -73,31 +73,6 @@ public class ProductQuestionServiceImpl extends ServiceImpl<ProductQuestionRepos
         }
         if (StringUtils.isNotEmpty(requestDTO.getRoleCode())) {
             queryWrapper.eq(ProductQuestion::getRoleCode, requestDTO.getRoleCode());
-        }
-        Page selectPage = this.baseMapper.selectPage(page, queryWrapper);
-        return ModelConvertUtils.convertPageDTO(selectPage, ProductQuestion.class);
-    }
-
-    @Override
-    public Boolean addOrUpdateRepair(RepairProductQuestionReqDTO requestDTO) {
-        ProductQuestion productQuestion = ModelConvertUtils.convert(requestDTO, ProductQuestion.class);
-        boolean saveOrUpdate = this.saveOrUpdate(productQuestion);
-        return saveOrUpdate;
-    }
-
-    @Override
-    public PageDTO<ProductQuestion> repairPageQuery(RepairProductQuestionReqDTO requestDTO) {
-        Page page = new Page(requestDTO.getCurrentPage(), requestDTO.getPageSize());
-        LambdaQueryWrapper<ProductQuestion> queryWrapper = new QueryWrapper().lambda();
-        queryWrapper.orderByDesc(ProductQuestion::getUpdateTime, ProductQuestion::getQuestionCode);
-        if (StringUtils.isNotEmpty(requestDTO.getQuestionCode())) {
-            queryWrapper.eq(ProductQuestion::getQuestionCode, requestDTO.getQuestionCode());
-        }
-        if (StringUtils.isNotEmpty(requestDTO.getQuestionContent())) {
-            queryWrapper.like(ProductQuestion::getQuestionContent, requestDTO.getQuestionContent());
-        }
-        if (StringUtils.isNotEmpty(requestDTO.getRepairQuestionCode())) {
-            queryWrapper.eq(ProductQuestion::getRepairQuestionCode, requestDTO.getRepairQuestionCode());
         }
         Page selectPage = this.baseMapper.selectPage(page, queryWrapper);
         return ModelConvertUtils.convertPageDTO(selectPage, ProductQuestion.class);

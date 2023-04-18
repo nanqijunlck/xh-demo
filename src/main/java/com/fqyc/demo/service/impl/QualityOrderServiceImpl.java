@@ -121,10 +121,14 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         String roleCode = loginUserInfo.getRoleCode();
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.eq(QualityOrder::getQrCode, qrCode);
-        queryWrapper.orderByAsc(QualityOrder::getQualityStatus, QualityOrder::getCreateTime);
+        queryWrapper.orderByDesc(QualityOrder::getQualityStatus, QualityOrder::getCreateTime);
         List<QualityOrder> qualityOrderList = this.baseMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(qualityOrderList) && !RoleCodeEnum.ONE_SCAN_MACHINE.getCode().equals(roleCode)) {
             throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "上一工位尚未完成");
+        }
+        List<QualityOrder> hasExistList = qualityOrderList.stream().filter(qualityOrder -> QualityStatusEnum.ERROR.getCode().equals(qualityOrder.getQualityStatus()) && roleCode.equals(qualityOrder.getRoleCode())).collect(Collectors.toList());
+        if(CollectionUtils.isNotEmpty(hasExistList)){
+            throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "已扫描过，请先维修");
         }
         scanQueryRspDTO.setQualityOrderList(qualityOrderList);
         // 不是第一次扫码
@@ -142,9 +146,9 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         }
         List<ProductQuestion> productQuestionList = new ArrayList<ProductQuestion>();
         if (RoleCodeEnum.FIVE_SCAN_MACHINE.getCode().equals(roleCode)) {
-            productQuestionList = productQuestionService.queryListByRoleCode(roleCode);
+            productQuestionList = productQuestionRepairService.queryListByQuestionCode(qualityOrderList.get(0).getQuestionCode());
         } else {
-            productQuestionList = productQuestionRepairService.queryListByRoleCode(roleCode);
+            productQuestionList = productQuestionService.queryListByRoleCode(roleCode);
         }
         scanQueryRspDTO.setProductQuestionList(productQuestionList);
         return scanQueryRspDTO;
