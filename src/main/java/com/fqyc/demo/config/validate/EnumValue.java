@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * 建议：尽量使用原生注解，如果Integer类型的属性的值是连续的，可以使用{@link Range}标签。String类型可以使用{@link Pattern}
  *
- * @author panyi
+ * @author lck
  * @date 2020-04-17 9:44
  * @since 1.0
  */

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 异常编码常量，异常编码的规则为：${spring.application.name}-${exceptionCode}
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-24 14:26
  * @since 1.0
  */

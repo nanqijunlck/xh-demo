@@ -7,7 +7,7 @@ import lombok.*;
 /**
  * 封装Http请求的Header中的业务属性
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-19 10:05
  * @since 1.0
  */

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * @author panyi
+ * @author lck
  */
 @SpringBootApplication(scanBasePackages = {"com.fqyc.demo.*"})
 @EnableTransactionManagement

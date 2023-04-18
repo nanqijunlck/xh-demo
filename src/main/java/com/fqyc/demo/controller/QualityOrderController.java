@@ -69,6 +69,5 @@ public class QualityOrderController extends BaseController {
     public void download(@RequestBody QualityOrderRequestDTO requestDTO, HttpServletResponse response) {
         log.info("下载质检单，requestDTO={}", requestDTO);
         qualityService.downloadQuery(requestDTO, response);
-        return;
     }
 }

@@ -1,7 +1,7 @@
 package com.fqyc.demo.util;//package com.fqyc.quality.util;
 //
 ///**
-// * @author panyi
+// * @author lck
 // * @date 2020-07-01 16:46
 // * @since 1.0
 // */

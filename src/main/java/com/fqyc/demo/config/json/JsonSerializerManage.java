@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
- * @author panyi
+ * @author lck
  * @date 2020-04-14 19:24
  * @since 1.0
  */

@@ -12,10 +12,7 @@ import com.fqyc.demo.enums.QualityStatusEnum;
 import com.fqyc.demo.enums.RoleCodeEnum;
 import com.fqyc.demo.exception.BizException;
 import com.fqyc.demo.repository.QualityRepository;
-import com.fqyc.demo.service.ProductQuestionService;
-import com.fqyc.demo.service.QualityOrderService;
-import com.fqyc.demo.service.SaleOrderService;
-import com.fqyc.demo.service.UserRoleService;
+import com.fqyc.demo.service.*;
 import com.fqyc.demo.util.DateUtil;
 import com.fqyc.demo.util.ExcelUtil;
 import com.fqyc.demo.util.ModelConvertUtils;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +43,8 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
     private UserRoleService userRoleService;
     @Resource
     private ProductQuestionService productQuestionService;
+    @Resource
+    private ProductQuestionRepairService productQuestionRepairService;
     @Resource
     private SaleOrderService saleOrderService;
     @Resource
@@ -89,7 +89,6 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
     public PageDTO<QualityOrder> queryListByPage(QualityOrderRequestDTO requestDTO) {
         Page page = new Page(requestDTO.getCurrentPage(), requestDTO.getPageSize());
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
-//        queryWrapper.ne(QualityOrder::getRoleCode, RoleCodeEnum.FIVE_SCAN_MACHINE.getCode());
         queryWrapper.orderByDesc(QualityOrder::getUpdateTime);
         if (StringUtils.isNotEmpty(requestDTO.getQrCode())) {
             queryWrapper.eq(QualityOrder::getQrCode, requestDTO.getQrCode());
@@ -141,7 +140,12 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
             scanQueryRspDTO.setEditFunction(false);
             return scanQueryRspDTO;
         }
-        List<ProductQuestion> productQuestionList = productQuestionService.queryListByRoleCode(roleCode, RoleCodeEnum.FIVE_SCAN_MACHINE.getCode().equals(roleCode) ? qualityOrderList.get(0).getQuestionCode() : null);
+        List<ProductQuestion> productQuestionList = new ArrayList<ProductQuestion>();
+        if (RoleCodeEnum.FIVE_SCAN_MACHINE.getCode().equals(roleCode)) {
+            productQuestionList = productQuestionService.queryListByRoleCode(roleCode);
+        } else {
+            productQuestionList = productQuestionRepairService.queryListByRoleCode(roleCode);
+        }
         scanQueryRspDTO.setProductQuestionList(productQuestionList);
         return scanQueryRspDTO;
     }
@@ -207,7 +211,7 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
             String fileName = list.get(0).getOrderCode() + DateUtil.getTodayYMDHMSString();
             ExcelUtil.write(response, QualityOrderDownloadRsp.class, fileName, fileName, qualityOrderDownloadRsp);
         } catch (Exception e) {
-            log.error("Error", e);
+            log.error("导出质检记录异常", e);
         }
     }
 }

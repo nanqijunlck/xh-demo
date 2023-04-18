@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * 首页访问Service
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-16 16:02
  * @since 1.0
  */
 public interface ProductQuestionService extends IService<ProductQuestion> {
 
-    List<ProductQuestion> queryListByRoleCode(String roleCode, String productQuestionCode);
+    List<ProductQuestion> queryListByRoleCode(String roleCode);
 
     Boolean addOrUpdate(ProductQuestionReqDTO requestDTO);
 

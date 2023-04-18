@@ -35,8 +35,6 @@ public class SaleOrderController extends BaseController {
 
     @Autowired
     private SaleOrderService saleOrderService;
-    @Autowired
-    private ExceptionCode exceptionCode;
 
     @ApiOperation("导入计划单")
     @PostMapping("/importSaleOrder")
@@ -52,8 +50,7 @@ public class SaleOrderController extends BaseController {
             throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "有订单已经导入过，请勿重复导入");
         } catch (Exception e) {
             log.error("导入文件异常", e);
-            throw new BizException(ExceptionCodeConstants.EXCEL_TEMPLATE_ERROR,
-                    exceptionCode.getExceptionMsg(ExceptionCodeConstants.EXCEL_TEMPLATE_ERROR));
+            throw new BizException(ExceptionCodeConstants.EXCEL_TEMPLATE_ERROR, "导入文件异常，请稍后重试");
         }
     }
 

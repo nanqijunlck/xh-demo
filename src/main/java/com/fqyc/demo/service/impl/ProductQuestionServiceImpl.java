@@ -32,13 +32,10 @@ import java.util.stream.Collectors;
 public class ProductQuestionServiceImpl extends ServiceImpl<ProductQuestionRepository, ProductQuestion> implements ProductQuestionService {
 
     @Override
-    public List<ProductQuestion> queryListByRoleCode(String roleCode, String productQuestionCode) {
+    public List<ProductQuestion> queryListByRoleCode(String roleCode) {
         LambdaQueryWrapper<ProductQuestion> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.eq(ProductQuestion::getRoleCode, roleCode);
         queryWrapper.orderByDesc(ProductQuestion::getUpdateTime);
-        if(StringUtils.isNotEmpty(productQuestionCode)){
-            queryWrapper.eq(ProductQuestion::getRepairQuestionCode, productQuestionCode);
-        }
         List<ProductQuestion> productQuestionList = this.baseMapper.selectList(queryWrapper);
         return productQuestionList;
     }

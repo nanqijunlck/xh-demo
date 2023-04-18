@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * 全局异常处理类，每个方法可以根据需要添加Servlet对象，Spring会自动注入
  * - HttpServletRequest/HttpServletResponse/HttpSession/...
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-19 10:37
  * @since 1.0
  */

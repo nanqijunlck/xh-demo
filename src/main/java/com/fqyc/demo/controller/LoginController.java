@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 /**
  * 用户登录的处理controller，包括从企业微信管理后台和手机端小程序两个访问入口
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-16 15:36
  * @since 1.0
  */

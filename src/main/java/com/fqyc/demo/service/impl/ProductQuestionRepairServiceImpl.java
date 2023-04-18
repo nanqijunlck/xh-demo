@@ -74,4 +74,14 @@ public class ProductQuestionRepairServiceImpl extends ServiceImpl<ProductQuestio
         Page selectPage = this.baseMapper.selectPage(page, queryWrapper);
         return ModelConvertUtils.convertPageDTO(selectPage, ProductQuestionRepair.class);
     }
+
+    @Override
+    public List<ProductQuestion> queryListByRoleCode(String questionCode) {
+        LambdaQueryWrapper<ProductQuestionRepair> queryWrapper = new QueryWrapper().lambda();
+        queryWrapper.eq(ProductQuestionRepair::getQuestionCode, questionCode);
+        queryWrapper.orderByDesc(ProductQuestionRepair::getUpdateTime);
+        List<ProductQuestionRepair> productQuestionList = this.baseMapper.selectList(queryWrapper);
+        List<ProductQuestion> productQuestions = ModelConvertUtils.convertList(productQuestionList, ProductQuestion.class);
+        return productQuestions;
+    }
 }

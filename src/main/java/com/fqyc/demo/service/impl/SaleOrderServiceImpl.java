@@ -11,7 +11,6 @@ import com.fqyc.demo.dto.SaleOrderPageRspDTO;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.entity.QrCodeOrder;
 import com.fqyc.demo.entity.SaleOrder;
-import com.fqyc.demo.exception.ExceptionCode;
 import com.fqyc.demo.repository.SaleOrderRepository;
 import com.fqyc.demo.service.QRCodeService;
 import com.fqyc.demo.service.SaleOrderService;
@@ -96,7 +95,7 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderRepository, SaleO
                         String quantityStr = QUANTITY_PREF.substring(0, 5 - String.valueOf(j).length()) + j;
                         String quantitySizeStr = QUANTITY_PREF.substring(0, 5 - String.valueOf(saleOrder.getQuantity()).length()) + saleOrder.getQuantity();
                         dataString = dataString + "/" + quantityStr + "(-" + quantitySizeStr + ")";
-                        BufferedImage bufferedImage = QRCodeNewUtil.getQRCodeImage(dataString, false,  "/"+quantityStr + "(" + quantitySizeStr + ")");
+                        BufferedImage bufferedImage = QRCodeNewUtil.getQRCodeImage(dataString, false, "/" + quantityStr + "(" + quantitySizeStr + ")");
                         File image = new File(imageFile.getPath() + "/" + saleOrder.getOrderCode() + "-" + saleOrder.getBenChangCode() + "-" + saleOrder.getMerchantCode() + "-" + saleOrder.getMerchantSpe() + "-" + saleOrder.getQuantity() + "-" + j + ".png");
                         FileOutputStream outputStream = new FileOutputStream(image);
                         ImageIO.write(bufferedImage, "png", outputStream);

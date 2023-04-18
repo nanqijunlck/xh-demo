@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 异常码配置类
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-19 10:37
  * @since 1.0
  */

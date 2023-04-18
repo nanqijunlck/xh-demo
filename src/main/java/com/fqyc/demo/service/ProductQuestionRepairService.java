@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * 首页访问Service
  *
- * @author panyi
+ * @author lck
  * @date 2020-03-16 16:02
  * @since 1.0
  */
@@ -23,4 +23,6 @@ public interface ProductQuestionRepairService extends IService<ProductQuestionRe
     Boolean addOrUpdateRepair(RepairProductQuestionReqDTO requestDTO);
 
     PageDTO<ProductQuestionRepair> repairPageQuery(RepairProductQuestionReqDTO requestDTO);
+
+    List<ProductQuestion> queryListByRoleCode(String roleCode);
 }
