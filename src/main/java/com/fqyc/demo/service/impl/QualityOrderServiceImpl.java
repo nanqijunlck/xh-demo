@@ -121,7 +121,7 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         String roleCode = loginUserInfo.getRoleCode();
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.eq(QualityOrder::getQrCode, qrCode);
-        queryWrapper.orderByDesc(QualityOrder::getQualityStatus, QualityOrder::getCreateTime);
+        queryWrapper.orderByAsc(QualityOrder::getQualityStatus, QualityOrder::getCreateTime);
         List<QualityOrder> qualityOrderList = this.baseMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(qualityOrderList) && !RoleCodeEnum.ONE_SCAN_MACHINE.getCode().equals(roleCode)) {
             throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "上一工位尚未完成");
