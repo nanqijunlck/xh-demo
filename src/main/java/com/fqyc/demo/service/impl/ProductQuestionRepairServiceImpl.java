@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.beust.jcommander.internal.Lists;
 import com.fqyc.demo.constants.ExceptionCodeConstants;
 import com.fqyc.demo.dto.ProductQuestionReqDTO;
 import com.fqyc.demo.dto.RepairProductQuestionReqDTO;
@@ -19,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,7 +84,11 @@ public class ProductQuestionRepairServiceImpl extends ServiceImpl<ProductQuestio
         queryWrapper.eq(ProductQuestionRepair::getQuestionCode, questionCode);
         queryWrapper.orderByAsc(ProductQuestionRepair::getRepairQuestionCode);
         List<ProductQuestionRepair> productQuestionList = this.baseMapper.selectList(queryWrapper);
-        List<ProductQuestion> productQuestions = ModelConvertUtils.convertList(productQuestionList, ProductQuestion.class);
-        return productQuestions;
+        List<ProductQuestion> resultList = new ArrayList<ProductQuestion>();
+        for (ProductQuestionRepair productQuestionRepair : productQuestionList) {
+            resultList.add(ProductQuestion.builder().questionCode(productQuestionRepair.getRepairQuestionCode())
+                    .questionContent(productQuestionRepair.getRepairQuestionContent()).build());
+        }
+        return resultList;
     }
 }
