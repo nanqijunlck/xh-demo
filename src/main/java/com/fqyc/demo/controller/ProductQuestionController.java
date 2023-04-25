@@ -34,7 +34,7 @@ public class ProductQuestionController extends BaseController {
     @ApiOperation("add/update质检故障")
     @PostMapping("/addOrUpdate")
     public ResponseBase<Boolean> addOrUpdate(@RequestBody ProductQuestionReqDTO requestDTO) {
-        log.debug("新增质检单，requestDTO={}", requestDTO);
+        log.debug("add/update质检故障，requestDTO={}", requestDTO);
         Boolean aBoolean = productQuestionService.addOrUpdate(requestDTO);
         return super.generateSuccess(aBoolean);
     }
@@ -42,7 +42,7 @@ public class ProductQuestionController extends BaseController {
     @ApiOperation("add/update维修")
     @PostMapping("/addOrUpdateRepair")
     public ResponseBase<Boolean> addOrUpdateRepair(@RequestBody RepairProductQuestionReqDTO requestDTO) {
-        log.debug("新增维修单，requestDTO={}", requestDTO);
+        log.debug("add/update维修，requestDTO={}", requestDTO);
         Boolean aBoolean = productQuestionRepairService.addOrUpdateRepair(requestDTO);
         return super.generateSuccess(aBoolean);
     }
@@ -57,7 +57,7 @@ public class ProductQuestionController extends BaseController {
     @ApiOperation("删除")
     @GetMapping("/deleteRepair")
     public ResponseBase<Boolean> deleteRepair(@RequestParam Integer id) {
-        log.debug("删除质检单，requestDTO={}", id);
+        log.debug("删除维修记录，requestDTO={}", id);
         Boolean aBoolean = productQuestionRepairService.deleteQuestion(id);
         return super.generateSuccess(aBoolean);
     }
@@ -73,7 +73,7 @@ public class ProductQuestionController extends BaseController {
     @ApiOperation("维修查询")
     @PostMapping("/repairPageQuery")
     public ResponseBase<PageDTO<ProductQuestionRepair>> repairPageQuery(@RequestBody RepairProductQuestionReqDTO requestDTO) {
-        log.debug("质检故障查询，requestDTO={}", requestDTO);
+        log.debug("维修查询，requestDTO={}", requestDTO);
         PageDTO<ProductQuestionRepair> pageQuery = productQuestionRepairService.repairPageQuery(requestDTO);
         return super.generateSuccess(pageQuery);
     }

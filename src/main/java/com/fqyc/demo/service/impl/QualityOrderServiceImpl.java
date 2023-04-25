@@ -117,19 +117,28 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
 
     @Override
     public ScanQueryRspDTO scanQueryList(String qrCode, UserInfo loginUserInfo) {
+        // todo 如果是维修，且所有的都已经是通过状态，则提示已维修
+
         ScanQueryRspDTO scanQueryRspDTO = ScanQueryRspDTO.builder().editFunction(true).qrCode(qrCode).build();
         String roleCode = loginUserInfo.getRoleCode();
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.eq(QualityOrder::getQrCode, qrCode);
-        queryWrapper.orderByAsc(QualityOrder::getQualityStatus, QualityOrder::getCreateTime);
+        queryWrapper.orderByDesc(QualityOrder::getCreateTime);
         List<QualityOrder> qualityOrderList = this.baseMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(qualityOrderList) && !RoleCodeEnum.ONE_SCAN_MACHINE.getCode().equals(roleCode)) {
             throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "上一工位尚未完成");
         }
         List<QualityOrder> hasExistList = qualityOrderList.stream().filter(qualityOrder -> QualityStatusEnum.ERROR.getCode().equals(qualityOrder.getQualityStatus()) && roleCode.equals(qualityOrder.getRoleCode())).collect(Collectors.toList());
-        if(CollectionUtils.isNotEmpty(hasExistList)){
+        if (CollectionUtils.isNotEmpty(hasExistList)) {
             throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "已扫描过，请先维修");
         }
+        if(RoleCodeEnum.ONE_SCAN_MACHINE.getCode().equals(roleCode)){
+            List<QualityOrder> orderList = qualityOrderList.stream().filter(qualityOrder -> QualityStatusEnum.ERROR.getCode().equals(qualityOrder.getQualityStatus())).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(orderList)) {
+                throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "已扫描过，请先维修");
+            }
+        }
+
         scanQueryRspDTO.setQualityOrderList(qualityOrderList);
         // 不是第一次扫码
         if (CollectionUtils.isNotEmpty(qualityOrderList)) {
@@ -158,6 +167,10 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
     public List<QualityOrder> queryList(QualityQuestionReqDTO reqDTO) {
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.orderByDesc(QualityOrder::getUpdateTime);
+
+        if (StringUtils.isNotEmpty(reqDTO.getStartTime())) {
+            queryWrapper.ge(QualityOrder::getCreateTime, reqDTO.getStartTime());
+        }
         // 默认半年时间
         if (StringUtils.isEmpty(reqDTO.getStartTime())) {
             reqDTO.setStartTime(DateUtil.getHalfYearDay());
@@ -171,9 +184,6 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         if (StringUtils.isNotEmpty(reqDTO.getMerchantCode())) {
             queryWrapper.eq(QualityOrder::getMerchantCode, reqDTO.getMerchantCode());
         }
-        if (StringUtils.isNotEmpty(reqDTO.getStartTime())) {
-            queryWrapper.ge(QualityOrder::getCreateTime, reqDTO.getStartTime());
-        }
         if (StringUtils.isNotEmpty(reqDTO.getEndTime())) {
             queryWrapper.le(QualityOrder::getCreateTime, reqDTO.getEndTime());
         }
@@ -182,6 +192,9 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         }
         if (StringUtils.isNotEmpty(reqDTO.getQualityStatus())) {
             queryWrapper.le(QualityOrder::getQualityStatus, reqDTO.getQualityStatus());
+        }
+        if (StringUtils.isNotEmpty(reqDTO.getRoleCode())) {
+            queryWrapper.eq(QualityOrder::getRoleCode, reqDTO.getRoleCode());
         }
         List<QualityOrder> list = this.list(queryWrapper);
         return list;

@@ -87,7 +87,7 @@ public class ProductQuestionRepairServiceImpl extends ServiceImpl<ProductQuestio
         List<ProductQuestion> resultList = new ArrayList<ProductQuestion>();
         for (ProductQuestionRepair productQuestionRepair : productQuestionList) {
             resultList.add(ProductQuestion.builder().questionCode(productQuestionRepair.getRepairQuestionCode())
-                    .questionContent(productQuestionRepair.getRepairQuestionContent()).build());
+                    .questionContent(productQuestionRepair.getRepairQuestionContent()).id(productQuestionRepair.getId()).build());
         }
         return resultList;
     }

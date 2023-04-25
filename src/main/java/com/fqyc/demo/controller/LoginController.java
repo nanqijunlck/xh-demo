@@ -1,21 +1,23 @@
 package com.fqyc.demo.controller;
 
 import com.fqyc.demo.controller.base.BaseController;
+import com.fqyc.demo.dto.UserLoginReqDTO;
 import com.fqyc.demo.dto.base.AppResponseBase;
 import com.fqyc.demo.dto.base.ResponseBase;
-import com.fqyc.demo.dto.UserLoginReqDTO;
 import com.fqyc.demo.entity.UserInfo;
 import com.fqyc.demo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
 /**
- * 用户登录的处理controller，包括从企业微信管理后台和手机端小程序两个访问入口
+ * 用户登录的处理controller
  *
  * @author lck
  * @date 2020-03-16 15:36
@@ -41,7 +43,7 @@ public class LoginController extends BaseController {
     @ApiOperation("用户登录")
     @PostMapping("/appLogin")
     public AppResponseBase<UserInfo> appLogin(@RequestBody UserLoginReqDTO reqDTO) {
-        log.debug("用户登录，reqDTO={}", reqDTO);
+        log.debug("App用户登录，reqDTO={}", reqDTO);
         UserInfo login = loginService.login(reqDTO.getUsername(), reqDTO.getPassword());
         AppResponseBase<UserInfo> base = AppResponseBase.success();
         base.setData(login);

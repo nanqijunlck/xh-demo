@@ -32,4 +32,7 @@ public class QualityOrderAddReqDTO extends SaleOrderBaseDTO {
 
     @ApiModelProperty("故障描述")
     private String questionContent;
+
+    @ApiModelProperty("维修内容")
+    private String repairQuestionContent;
 }

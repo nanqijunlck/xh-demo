@@ -8,7 +8,6 @@ import com.fqyc.demo.constants.ExceptionCodeConstants;
 import com.fqyc.demo.dto.UserInfoPageQueryReqDTO;
 import com.fqyc.demo.dto.UserInfoReqDTO;
 import com.fqyc.demo.dto.base.PageDTO;
-import com.fqyc.demo.entity.SaleOrder;
 import com.fqyc.demo.entity.UserInfo;
 import com.fqyc.demo.exception.BizException;
 import com.fqyc.demo.repository.UserInfoRepository;

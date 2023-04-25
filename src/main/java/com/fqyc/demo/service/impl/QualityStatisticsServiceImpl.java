@@ -18,7 +18,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author lck
@@ -35,32 +38,36 @@ public class QualityStatisticsServiceImpl implements QualityStatisticsService {
     @Override
     public PageDTO<QualityQuestionRspDTO> roleQuestionStatics(QualityQuestionReqDTO reqDTO) {
         PageDTO<QualityQuestionRspDTO> pageDTO = new PageDTO();
-        Integer totalCount = 0;
         List<QualityOrder> qualityOrderList = qualityOrderService.queryList(reqDTO);
-        Map<String, List<QualityOrder>> listMap = qualityOrderList.stream().collect(Collectors.groupingBy(QualityOrder::getQuestionCode));
-        for (Map.Entry<String, List<QualityOrder>> stringListEntry : listMap.entrySet()) {
-            totalCount += stringListEntry.getValue().size();
+        if (CollectionUtils.isEmpty(qualityOrderList)) {
+            return pageDTO;
         }
+        Map<String, List<QualityOrder>> listMap = qualityOrderList.stream().collect(Collectors.groupingBy(QualityOrder::getOrderCode));
 
         List<QualityQuestionRspDTO> result = new ArrayList<>(listMap.size());
         for (Map.Entry<String, List<QualityOrder>> stringListEntry : listMap.entrySet()) {
             List<QualityOrder> mapKeyList = stringListEntry.getValue();
+            QualityOrder qualityOrder1 = mapKeyList.get(0);
             if (CollectionUtils.isNotEmpty(stringListEntry.getValue())) {
-                QualityQuestionRspDTO rspDTO = QualityQuestionRspDTO.builder().questionCode(mapKeyList.get(0).getQuestionCode()).questionContent(mapKeyList.get(0).getQuestionContent()).build();
-                List<QualityOrder> sucList = mapKeyList.stream().filter(qualityOrder -> QualityStatusEnum.SUCCESS.getCode().equals(qualityOrder.getQualityStatus())).collect(Collectors.toList());
-                int sucCount = sucList.size();
-                List<QualityOrder> errorList = mapKeyList.stream().filter(qualityOrder -> QualityStatusEnum.ERROR.getCode().equals(qualityOrder.getQualityStatus())).collect(Collectors.toList());
-                int errCount = errorList.size();
+                QualityQuestionRspDTO rspDTO = QualityQuestionRspDTO.builder()
+                        .orderCode(qualityOrder1.getOrderCode())
+                        .merchantCode(qualityOrder1.getMerchantCode())
+                        .benChangCode(qualityOrder1.getBenChangCode())
+                        .quantity(qualityOrder1.getQuantity())
+                        .merchantCode(qualityOrder1.getMerchantCode())
+                        .build();
                 rspDTO.setScanRecordCount(mapKeyList.size());
-                rspDTO.setScanRecordErrorCount(errCount);
-                rspDTO.setScanRecordSuccessCount(sucCount);
                 //一次性合格率 没有错误记录的
-                int errSize = errorList.stream().collect(Collectors.groupingBy(QualityOrder::getQrCode)).size();
-                BigDecimal noQuestionPercent = new BigDecimal(totalCount - errSize).divide(new BigDecimal(totalCount), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+                List<QualityOrder> firstSucList = mapKeyList.stream().filter(qualityOrder -> StringUtils.isEmpty(qualityOrder.getRepairContent())
+                        && QualityStatusEnum.SUCCESS.getCode().equals(qualityOrder.getQualityStatus())).collect(toList());
+                Map<String, List<QualityOrder>> collect = firstSucList.stream().collect(Collectors.groupingBy(QualityOrder::getQrCode));
+                rspDTO.setScanRecordSuccessCount(firstSucList.size());
+                rspDTO.setScanRecordErrorCount(mapKeyList.size() - firstSucList.size());
+                BigDecimal noQuestionPercent = new BigDecimal(collect.size()).divide(new BigDecimal(qualityOrder1.getQuantity()), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
                 rspDTO.setNoQuestionPercent(noQuestionPercent.toPlainString());
                 //百分百合格率
-                int size1 = sucList.stream().collect(Collectors.groupingBy(QualityOrder::getQrCode)).size();
-                BigDecimal lastSucPercent = new BigDecimal(size1).divide(new BigDecimal(totalCount), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+                int size = mapKeyList.stream().filter(qualityOrder -> QualityStatusEnum.SUCCESS.getCode().equals(qualityOrder.getQualityStatus())).collect(Collectors.groupingBy(QualityOrder::getQrCode)).size();
+                BigDecimal lastSucPercent = new BigDecimal(size).divide(new BigDecimal(qualityOrder1.getQuantity()), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
                 rspDTO.setLastSuccessPercent(lastSucPercent.toPlainString());
                 result.add(rspDTO);
             }
@@ -81,7 +88,7 @@ public class QualityStatisticsServiceImpl implements QualityStatisticsService {
             Map<String, List<QualityOrder>> questionMap = qualityOrderList.stream().collect(Collectors.groupingBy(QualityOrder::getQuestionCode));
             for (Map.Entry<String, List<QualityOrder>> map : questionMap.entrySet()) {
                 String questionCode = map.getKey();
-                String questionContent = StringUtils.join(map.getValue().stream().map(QualityOrder::getQuestionContent).distinct().collect(Collectors.toList()), "/");
+                String questionContent = StringUtils.join(map.getValue().stream().map(QualityOrder::getQuestionContent).distinct().collect(toList()), "/");
                 Integer questionCount = map.getValue().size();
                 totalCount += questionCount;
                 rspDTOList.add(QuestionStatisticsRspDTO.builder().questionCode(questionCode).questionContent(questionContent).questionCount(questionCount).build());

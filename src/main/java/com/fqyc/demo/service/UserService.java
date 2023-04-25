@@ -16,8 +16,8 @@ import com.fqyc.demo.entity.UserInfo;
 public interface UserService extends IService<UserInfo> {
     /**
      * 从app登录
-     * @param userCode
-     * @param passWord
+     * @param username
+     * @param password
      * @return
      */
     UserInfo login(String username, String password);

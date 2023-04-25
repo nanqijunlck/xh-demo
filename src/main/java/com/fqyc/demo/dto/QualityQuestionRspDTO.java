@@ -16,11 +16,21 @@ import java.io.Serializable;
 @Builder
 public class QualityQuestionRspDTO implements Serializable {
 
-    @ApiModelProperty("故障编码")
-    private String questionCode;
+    @ApiModelProperty("计划单号")
+    private String orderCode;
 
-    @ApiModelProperty("故障描述")
-    private String questionContent;
+    @ApiModelProperty("客户代码")
+    private String merchantCode;
+
+    @ApiModelProperty("编码")
+    private String benChangCode;
+
+    @ApiModelProperty("客户型号")
+    private String merchantSpe;
+
+    @ApiModelProperty("数量")
+    private Integer quantity;
+
 
     @ApiModelProperty("扫码记录数")
     private Integer scanRecordCount;
