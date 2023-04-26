@@ -27,7 +27,7 @@ public interface QualityOrderService extends IService<QualityOrder> {
 
     ScanQueryRspDTO scanQueryList(String qrCode, UserInfo loginUserInfo);
 
-    List<QualityOrder> queryList(QualityQuestionReqDTO reqDTO);
+    List<QualityOrder> queryList(QualityQuestionReqDTO reqDTO, Boolean notNull);
 
     void downloadQuery(QualityOrderRequestDTO requestDTO, HttpServletResponse response);
 }

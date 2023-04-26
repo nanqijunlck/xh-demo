@@ -125,7 +125,7 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         queryWrapper.eq(QualityOrder::getQrCode, qrCode);
         queryWrapper.orderByDesc(QualityOrder::getCreateTime);
         List<QualityOrder> qualityOrderList = this.baseMapper.selectList(queryWrapper);
-        if (CollectionUtils.isEmpty(qualityOrderList) && !RoleCodeEnum.ONE_SCAN_MACHINE.getCode().equals(roleCode)) {
+        if (!RoleCodeEnum.ONE_SCAN_MACHINE.getCode().equals(roleCode) && CollectionUtils.isEmpty(qualityOrderList)) {
             throw new BizException(ExceptionCodeConstants.BIZ_ERR_CODE, "上一工位尚未完成");
         }
         List<QualityOrder> hasExistList = qualityOrderList.stream().filter(qualityOrder -> QualityStatusEnum.ERROR.getCode().equals(qualityOrder.getQualityStatus()) && roleCode.equals(qualityOrder.getRoleCode())).collect(Collectors.toList());
@@ -164,13 +164,10 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
     }
 
     @Override
-    public List<QualityOrder> queryList(QualityQuestionReqDTO reqDTO) {
+    public List<QualityOrder> queryList(QualityQuestionReqDTO reqDTO, Boolean notNull) {
         LambdaQueryWrapper<QualityOrder> queryWrapper = new QueryWrapper().lambda();
         queryWrapper.orderByDesc(QualityOrder::getUpdateTime);
 
-        if (StringUtils.isNotEmpty(reqDTO.getStartTime())) {
-            queryWrapper.ge(QualityOrder::getCreateTime, reqDTO.getStartTime());
-        }
         // 默认半年时间
         if (StringUtils.isEmpty(reqDTO.getStartTime())) {
             reqDTO.setStartTime(DateUtil.getHalfYearDay());
@@ -178,14 +175,13 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         if (StringUtils.isEmpty(reqDTO.getEndTime())) {
             reqDTO.setEndTime(DateUtil.format(new Date(), DateUtil.CN_YEAR_MONTH_DAY_FORMAT));
         }
+        queryWrapper.ge(QualityOrder::getCreateTime, reqDTO.getStartTime());
+        queryWrapper.le(QualityOrder::getCreateTime, reqDTO.getEndTime());
         if (StringUtils.isNotEmpty(reqDTO.getQrCode())) {
             queryWrapper.eq(QualityOrder::getQrCode, reqDTO.getQrCode());
         }
         if (StringUtils.isNotEmpty(reqDTO.getMerchantCode())) {
             queryWrapper.eq(QualityOrder::getMerchantCode, reqDTO.getMerchantCode());
-        }
-        if (StringUtils.isNotEmpty(reqDTO.getEndTime())) {
-            queryWrapper.le(QualityOrder::getCreateTime, reqDTO.getEndTime());
         }
         if (StringUtils.isNotEmpty(reqDTO.getOrderCode())) {
             queryWrapper.le(QualityOrder::getOrderCode, reqDTO.getOrderCode());
@@ -195,6 +191,9 @@ public class QualityOrderServiceImpl extends ServiceImpl<QualityRepository, Qual
         }
         if (StringUtils.isNotEmpty(reqDTO.getRoleCode())) {
             queryWrapper.eq(QualityOrder::getRoleCode, reqDTO.getRoleCode());
+        }
+        if (notNull) {
+            queryWrapper.ne(QualityOrder::getQuestionCode, "");
         }
         List<QualityOrder> list = this.list(queryWrapper);
         return list;

@@ -6,6 +6,7 @@ import com.fqyc.demo.dto.QuestionStatisticsRspDTO;
 import com.fqyc.demo.dto.base.PageDTO;
 import com.fqyc.demo.entity.QualityOrder;
 import com.fqyc.demo.enums.QualityStatusEnum;
+import com.fqyc.demo.enums.RoleCodeEnum;
 import com.fqyc.demo.service.QualityOrderService;
 import com.fqyc.demo.service.QualityStatisticsService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -38,7 +38,7 @@ public class QualityStatisticsServiceImpl implements QualityStatisticsService {
     @Override
     public PageDTO<QualityQuestionRspDTO> roleQuestionStatics(QualityQuestionReqDTO reqDTO) {
         PageDTO<QualityQuestionRspDTO> pageDTO = new PageDTO();
-        List<QualityOrder> qualityOrderList = qualityOrderService.queryList(reqDTO);
+        List<QualityOrder> qualityOrderList = qualityOrderService.queryList(reqDTO, false);
         if (CollectionUtils.isEmpty(qualityOrderList)) {
             return pageDTO;
         }
@@ -56,18 +56,22 @@ public class QualityStatisticsServiceImpl implements QualityStatisticsService {
                         .quantity(qualityOrder1.getQuantity())
                         .merchantCode(qualityOrder1.getMerchantCode())
                         .build();
-                rspDTO.setScanRecordCount(mapKeyList.size());
                 //一次性合格率 没有错误记录的
                 List<QualityOrder> firstSucList = mapKeyList.stream().filter(qualityOrder -> StringUtils.isEmpty(qualityOrder.getRepairContent())
                         && QualityStatusEnum.SUCCESS.getCode().equals(qualityOrder.getQualityStatus())).collect(toList());
                 Map<String, List<QualityOrder>> collect = firstSucList.stream().collect(Collectors.groupingBy(QualityOrder::getQrCode));
-                rspDTO.setScanRecordSuccessCount(firstSucList.size());
-                rspDTO.setScanRecordErrorCount(mapKeyList.size() - firstSucList.size());
-                BigDecimal noQuestionPercent = new BigDecimal(collect.size()).divide(new BigDecimal(qualityOrder1.getQuantity()), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+                int count = 0;
+                for (Map.Entry<String, List<QualityOrder>> map : collect.entrySet()) {
+                    if (map.getValue().size() == 4) {
+                        count++;
+                    }
+                }
+                BigDecimal noQuestionPercent = new BigDecimal(count).divide(new BigDecimal(qualityOrder1.getQuantity()), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
                 rspDTO.setNoQuestionPercent(noQuestionPercent.toPlainString());
                 //百分百合格率
-                int size = mapKeyList.stream().filter(qualityOrder -> QualityStatusEnum.SUCCESS.getCode().equals(qualityOrder.getQualityStatus())).collect(Collectors.groupingBy(QualityOrder::getQrCode)).size();
-                BigDecimal lastSucPercent = new BigDecimal(size).divide(new BigDecimal(qualityOrder1.getQuantity()), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+                Map<String, List<QualityOrder>> stringListMap = mapKeyList.stream().filter(qualityOrder -> QualityStatusEnum.SUCCESS.getCode().equals(qualityOrder.getQualityStatus())
+                        && RoleCodeEnum.FORE_SCAN_MACHINE.getCode().equals(qualityOrder.getRoleCode())).collect(Collectors.groupingBy(QualityOrder::getQrCode));
+                BigDecimal lastSucPercent = new BigDecimal(stringListMap.size()).divide(new BigDecimal(qualityOrder1.getQuantity()), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
                 rspDTO.setLastSuccessPercent(lastSucPercent.toPlainString());
                 result.add(rspDTO);
             }
@@ -82,7 +86,8 @@ public class QualityStatisticsServiceImpl implements QualityStatisticsService {
         PageDTO pageDTO = new PageDTO();
         Integer totalCount = 0;
         //  查询所有不通过的故障
-        List<QualityOrder> qualityOrderList = qualityOrderService.queryList(reqDTO);
+        Boolean notNull = true;
+        List<QualityOrder> qualityOrderList = qualityOrderService.queryList(reqDTO, notNull);
         List<QuestionStatisticsRspDTO> rspDTOList = new ArrayList<>(16);
         if (CollectionUtils.isNotEmpty(qualityOrderList)) {
             Map<String, List<QualityOrder>> questionMap = qualityOrderList.stream().collect(Collectors.groupingBy(QualityOrder::getQuestionCode));

@@ -51,7 +51,7 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderRepository, SaleO
     private QRCodeService qrCodeService;
 
     private static final String QUANTITY_PREF = "00000";
-    private static final String FILEPATH = "C://pdf//";
+    private static final String FILEPATH = "C://Users//Administrator//Desktop//计划单二维码//";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
